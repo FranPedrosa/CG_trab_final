@@ -13,8 +13,8 @@ import keys
 
 inds = []
 objs = ['parede.obj','chao.obj','mesa.obj','xicara.obj' ,'porta.obj'     ,'grama.obj','estrada.obj','carta.obj','cogumelo.obj','lagarta.obj','ceu.obj' ]
-texs = ['parede.jpg','chao.png','mesa.png','xicara.jpg' ,'porta.jpg'     ,'grama.jpg','estrada.jpg','carta.jpg','cogumelo.jpg','lagarta.jpg','ceu.jpg' ]
-poss = [(0,0,0     ),(0,0,0   ),(15,0,0   ),(18.5,6.3,0  ),(0,30,0        ),(-30,30,0 ),(0,0,-90    ),(-5,0,-70 ),(10,40,1)     ,(-15,35,1   ),(0,0,-45  )]
+texs = ['parede_3.jpg','chao.png','mesa.png','xicara.jpg' ,'porta.jpg'     ,'grama.jpg','estrada.jpg','carta.jpg','cogumelo.jpg','lagarta.jpg','ceu.jpg']
+poss = [(0,0,0     ),(0,0,0   ),(15,0,0   ),(18.5,6.3,0  ),(0,30,0        ),(-30,30,0 ),(0,0,-90    ),(-5,0,-70 ),(10,40,1)     ,(-15,35,1   ),(0,0,-45 )]
 scas = [(30,30,30  ),(30,30,30),(4,4,4   ),(0.5,0.5,0.5),(0.01,0.01,0.01),(2,2,2    ),(5,5,5      ),(5,5,5    ),(1,1,1)       ,(3,3,3      ),(30,30,30)]
 rots = [(0,1,0     ),(0,1,0   ),(0,1,0   ),(0,1,0      ),(-1,0,0        ),(-1,0,0   ),(0,1,0      ),(0,1,0    ),(-1,0,0)      ,(-1,0,0     ),(0,1,0   )]
 angs = [ 0          , 0        , 0        , 0           ,90              , 90        ,0           , 0         , 90           , 90          , 1        ]
