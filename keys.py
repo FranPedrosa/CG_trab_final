@@ -1,5 +1,6 @@
 import math
 import glm
+import time
 
 import matrix
 
@@ -8,6 +9,10 @@ speed = 1
 
 inside = True
 small = False
+zooming = False
+
+zoom_begin = None
+zoom_pos = None
 
 def colision(direction):
     x = matrix.cameraPos[0] + matrix.cameraFront[0]*direction
@@ -18,7 +23,9 @@ def colision(direction):
         return x > 4 or x < -4 or w < -70 or w > -31
 
 def key_event(window,key,scancode,action,mods):
-    global ang,speed,small,inside
+    global ang,speed,small,inside, zooming, zoom_pos, zoom_begin
+    if zooming:
+        return
     if key == 65:
         ang -= math.pi/30
     if key == 68:
@@ -34,6 +41,10 @@ def key_event(window,key,scancode,action,mods):
         matrix.cameraPos[1] = 1
         speed = 0.2
         small = True
+    if key == 90 and not colision(5):
+        zoom_begin = time.time()
+        zoom_pos = matrix.cameraPos
+        zooming = True
     if action == 1:
         if key == 32 and matrix.close(0,-28) and small and inside:
             matrix.cameraPos[0] = 0

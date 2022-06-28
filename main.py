@@ -12,12 +12,12 @@ import matrix
 import keys
 
 inds = []
-objs = ['parede.obj','chao.obj','mesa.obj','xicara.obj' ,'porta.obj'     ,'grama.obj','estrada.obj','carta.obj','cogumelo.obj','lagarta.obj','ceu.obj' ]
-texs = ['parede_3.jpg','chao.png','mesa.png','xicara.jpg' ,'porta.jpg'     ,'grama.jpg','estrada.jpg','carta.jpg','cogumelo.jpg','lagarta.jpg','ceu.jpg']
-poss = [(0,0,0     ),(0,0,0   ),(15,0,0   ),(18.5,6.3,0  ),(0,30,0        ),(-30,30,0 ),(0,0,-90    ),(-5,0,-70 ),(10,40,1)     ,(-15,35,1   ),(0,0,-45 )]
-scas = [(30,30,30  ),(30,30,30),(4,4,4   ),(0.5,0.5,0.5),(0.01,0.01,0.01),(2,2,2    ),(5,5,5      ),(5,5,5    ),(1,1,1)       ,(3,3,3      ),(30,30,30)]
-rots = [(0,1,0     ),(0,1,0   ),(0,1,0   ),(0,1,0      ),(-1,0,0        ),(-1,0,0   ),(0,1,0      ),(0,1,0    ),(-1,0,0)      ,(-1,0,0     ),(0,1,0   )]
-angs = [ 0          , 0        , 0        , 0           ,90              , 90        ,0           , 0         , 90           , 90          , 1        ]
+objs = ['parede.obj'  ,'chao.obj','mesa.obj','xicara.obj' ,'porta.obj'     ,'grama.obj','estrada.obj','carta.obj','cogumelo.obj','lagarta.obj','ceu.obj' ]
+texs = ['parede_3.jpg','chao.png','mesa.png','xicara.jpg' ,'porta.jpg'     ,'grama.jpg','estrada.jpg','carta.jpg','cogumelo.jpg','lagarta.jpg','ceu.jpg' ]
+poss = [(0,0,0       ),(0,0,0   ),(15,0,0  ),(18.5,6.3,0 ),(0,30,0        ),(-30,30,0 ),(0,0,-90    ),(-5,0,-70 ),(10,40,1)     ,(-15,35,1   ),(0,0,-45 )]
+scas = [(30,30,30    ),(30,30,30),(4,4,4   ),(0.5,0.5,0.5),(0.01,0.01,0.01),(2,2,2    ),(5,5,5      ),(5,5,5    ),(1,1,1)       ,(3,3,3      ),(30,30,30)]
+rots = [(0,1,0       ),(0,1,0   ),(0,1,0   ),(0,1,0      ),(-1,0,0        ),(-1,0,0   ),(0,1,0      ),(0,1,0    ),(-1,0,0)      ,(-1,0,0     ),(0,1,0   )]
+angs = [ 0            , 0        , 0        , 0           ,90              , 90        ,0           , 0         , 90           , 90          , 1         ]
 
 
 vertices_list = []    
@@ -93,30 +93,29 @@ def all_gpu():
     send_gpu(normals_list,3,2,'normals')
     glEnable(GL_DEPTH_TEST)
 
-def desenha_obj(mat_model,ks,tex,indexes):
+def desenha_obj(mat_model,tex,indexes):
     begin, end = indexes
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
-    glUniform1f(loc_ka, ks[0]) ### envia ka pra gpu
-    
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel kd na GPU
-    glUniform1f(loc_kd, ks[1]) ### envia kd pra gpu    
-    
-    loc_ks = glGetUniformLocation(program, "ks") # recuperando localizacao da variavel ks na GPU
-    glUniform1f(loc_ks, ks[2]) ### envia ks pra gpu        
-    
-    loc_ns = glGetUniformLocation(program, "ns") # recuperando localizacao da variavel ns na GPU
-    glUniform1f(loc_ns, ks[3]) ### envia ns pra gpu        
-
     glBindTexture(GL_TEXTURE_2D, tex)
     glDrawArrays(GL_TRIANGLES, begin,end-begin)
 
 
-def animation(t):
+def animation():
+    t = time.time() - begin
     ft = 1+0.3*math.cos(t) 
     scas[8] = (1,ft,ft)
+
+    if keys.zooming:
+        print('a')
+        t = 2*(time.time() - keys.zoom_begin)
+        ft = math.sin(t) 
+        matrix.camera_ang = 45 + ft*10
+        matrix.cameraPos = keys.zoom_pos + ft*5*matrix.cameraFront
+        if t >= (math.pi):
+            keys.zooming = False
+            matrix.camera_ang = 45
+            matrix.camera_pos = keys.zoom_pos
 
 def main_loop():
 
@@ -127,9 +126,7 @@ def main_loop():
 
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL)
 
-
-    t = time.time() - begin
-    animation(t)
+    animation()
 
 
     for i in range(len(objs)):
@@ -137,9 +134,8 @@ def main_loop():
         rx,ry,rz = rots[i]
         sx,sy,sz = scas[i]
         ang      = angs[i]
-        kss = [0.5,0.5,0.5,32]
         mat_model = matrix.model(ang,rx,ry,rz,px,py,pz,sx,sy,sz)
-        desenha_obj(mat_model,kss,i,inds[i])
+        desenha_obj(mat_model,i,inds[i])
 
     mat_view = matrix.view()
     loc_view = glGetUniformLocation(program, "view")
@@ -152,6 +148,9 @@ def main_loop():
     cpos = matrix.cameraPos
     loc_view_pos = glGetUniformLocation(program, "viewPos")
     glUniform3f(loc_view_pos, cpos[0], cpos[1], cpos[2])
+
+    loc_view_pos = glGetUniformLocation(program, "lightPos")
+    glUniform3f(loc_view_pos, cpos[0], cpos[1], cpos[2])
     
     glfw.swap_buffers(window)
 
@@ -159,8 +158,8 @@ def main_loop():
 if __name__ == '__main__':
 
     begin = time.time()
-
     window = init_window(900,900,'Alice')
+
     for obj in objs:
         m = load.load_model(obj)
         inds.append( add_model(m))

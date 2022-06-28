@@ -6,6 +6,8 @@ cameraPos   = glm.vec3(0.0,  8.0,  0.0);
 cameraFront = glm.vec3(0.0,  0.0,  -1.0);
 cameraUp    = glm.vec3(0.0,  1.0,  0.0);
 
+camera_ang = 45.0
+
 
 def close(x,z):
     return (abs(cameraPos[0] - x) < 3) and (abs(cameraPos[2] - z) < 3)
@@ -37,6 +39,7 @@ def view():
 
 def projection():
     # perspective parameters: fovy, aspect, near, far
-    mat_projection = glm.perspective(glm.radians(45.0), 1, 0.1, 1000.0)
+    rad = math.radians(camera_ang)
+    mat_projection = glm.perspective(rad, 1, 0.1, 1000.0)
     mat_projection = np.array(mat_projection)    
     return mat_projection
