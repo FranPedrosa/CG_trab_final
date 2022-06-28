@@ -4,22 +4,26 @@ import OpenGL.GL.shaders
 import numpy as np
 import glm
 import math
+import time
 
 import codes
 import load
 import matrix
 import keys
 
-objs = ['parede.obj','chao.obj','mesa.obj','frasco.obj','key.obj','bau.obj']
-texts = ['parede.jpg','chao.png','mesa.png','frasco.png','key.jpg','bau.jpg']
-pos = []
-params = [[0,0,0,30],[0,0,0,30],[0,0,0,4],[4,5.8,0,5],[0,5.8,4,0.1],[20,0,2,0.1]]
-
+inds = []
+objs = ['parede.obj','chao.obj','mesa.obj','xicara.obj' ,'porta.obj'     ,'grama.obj','estrada.obj','carta.obj','cogumelo.obj','lagarta.obj','ceu.obj' ]
+texs = ['parede.jpg','chao.png','mesa.png','xicara.jpg' ,'porta.jpg'     ,'grama.jpg','estrada.jpg','carta.jpg','cogumelo.jpg','lagarta.jpg','ceu.jpg' ]
+poss = [(0,0,0     ),(0,0,0   ),(15,0,0   ),(18.5,6.3,0  ),(0,30,0        ),(-30,30,0 ),(0,0,-90    ),(-5,0,-70 ),(10,40,1)     ,(-15,35,1   ),(0,0,-45  )]
+scas = [(30,30,30  ),(30,30,30),(4,4,4   ),(0.5,0.5,0.5),(0.01,0.01,0.01),(2,2,2    ),(5,5,5      ),(5,5,5    ),(1,1,1)       ,(3,3,3      ),(30,30,30)]
+rots = [(0,1,0     ),(0,1,0   ),(0,1,0   ),(0,1,0      ),(-1,0,0        ),(-1,0,0   ),(0,1,0      ),(0,1,0    ),(-1,0,0)      ,(-1,0,0     ),(0,1,0   )]
+angs = [ 0          , 0        , 0        , 0           ,90              , 90        ,0           , 0         , 90           , 90          , 1        ]
 
 
 vertices_list = []    
 normals_list = []    
 textures_coord_list = []
+begin = 0
 
 buffs = None
 program = None
@@ -89,8 +93,8 @@ def all_gpu():
     send_gpu(normals_list,3,2,'normals')
     glEnable(GL_DEPTH_TEST)
 
-def desenha_obj(mat_model,ks,tex,pos):
-    begin, end = pos
+def desenha_obj(mat_model,ks,tex,indexes):
+    begin, end = indexes
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     
@@ -110,7 +114,12 @@ def desenha_obj(mat_model,ks,tex,pos):
     glDrawArrays(GL_TRIANGLES, begin,end-begin)
 
 
+def animation(t):
+    ft = 1+0.3*math.cos(t) 
+    scas[8] = (1,ft,ft)
+
 def main_loop():
+
     glfw.poll_events() 
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -119,11 +128,18 @@ def main_loop():
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL)
 
 
+    t = time.time() - begin
+    animation(t)
+
+
     for i in range(len(objs)):
-        x,y,z,s = params[i]
+        px,py,pz = poss[i]
+        rx,ry,rz = rots[i]
+        sx,sy,sz = scas[i]
+        ang      = angs[i]
         kss = [0.5,0.5,0.5,32]
-        mat_model = matrix.model(0, 0,1,0, x,y,z, s,s,s)
-        desenha_obj(mat_model,kss,i,pos[i])
+        mat_model = matrix.model(ang,rx,ry,rz,px,py,pz,sx,sy,sz)
+        desenha_obj(mat_model,kss,i,inds[i])
 
     mat_view = matrix.view()
     loc_view = glGetUniformLocation(program, "view")
@@ -142,13 +158,15 @@ def main_loop():
 
 if __name__ == '__main__':
 
-    window = init_window(900,900,'Doginho')
+    begin = time.time()
+
+    window = init_window(900,900,'Alice')
     for obj in objs:
         m = load.load_model(obj)
-        pos.append( add_model(m))
+        inds.append( add_model(m))
 
     i = 0
-    for t in texts:
+    for t in texs:
         load.load_texture(i,t)
         i+=1
 
@@ -161,6 +179,3 @@ if __name__ == '__main__':
         main_loop()
 
     glfw.terminate()
-
-        
-        

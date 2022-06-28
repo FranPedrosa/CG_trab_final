@@ -1,11 +1,18 @@
 import glm
+import math
 import numpy as np
 
 cameraPos   = glm.vec3(0.0,  8.0,  0.0);
 cameraFront = glm.vec3(0.0,  0.0,  -1.0);
 cameraUp    = glm.vec3(0.0,  1.0,  0.0);
 
+
+def close(x,z):
+    return (abs(cameraPos[0] - x) < 3) and (abs(cameraPos[2] - z) < 3)
+
 def model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z):
+
+    angle = math.radians(angle)
     
     matrix_transform = glm.mat4(1.0) # instanciando uma matriz identidade
        

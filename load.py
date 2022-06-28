@@ -34,7 +34,6 @@ def load_model(filename):
             material = values[1]
         elif values[0] == 'f':
             for i in range(1,len(values)-2):
-                print(i,i+2)
                 face = []
                 face_texture = []
                 face_normals = []
@@ -45,7 +44,7 @@ def load_model(filename):
                     if len(w) >= 2 and len(w[1]) > 0:
                         face_texture.append(int(w[1]))
                     else:
-                        face_texture.append(0)
+                        face_texture.append(1)
                 faces.append((face, face_texture, face_normals, material))
 
     model = {}
@@ -54,7 +53,6 @@ def load_model(filename):
     model['faces'] = faces
     model['normals'] = normals
 
-    print(len(faces))
     return model
 
 def load_texture(texture_id, img_textura):
