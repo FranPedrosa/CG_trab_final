@@ -1,3 +1,10 @@
+'''
+Nomes:                          Nusp:
+Bruno Fernandes Moreira         11218712
+Francisco de Freitas Pedrosa    11215699
+Savio Duarte Fontes             10737251
+Thales Willian Dalvi da Silva   11219196
+'''
 import glfw
 from OpenGL.GL import *
 import OpenGL.GL.shaders
