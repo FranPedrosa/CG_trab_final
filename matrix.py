@@ -1,3 +1,4 @@
+#Arquivo com as definições das matrizes model, view e projection que são usadas no programa
 import glm
 import math
 import numpy as np
@@ -8,10 +9,11 @@ cameraUp    = glm.vec3(0.0,  1.0,  0.0);
 
 camera_ang = 45.0
 
-
+#Função que retorna um bool sobre a posição da câmera num certo alcance
 def close(x,z):
     return (abs(cameraPos[0] - x) < 3) and (abs(cameraPos[2] - z) < 3)
 
+#Definição da matrix model que aplica todas as tranformações geométricas aos objetos
 def model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z):
 
     angle = math.radians(angle)
@@ -32,11 +34,13 @@ def model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z):
     
     return matrix_transform
 
+#Definição da matrix view
 def view():
     mat_view = glm.lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     mat_view = np.array(mat_view)
     return mat_view
 
+#Definição da Matrix projection
 def projection():
     # perspective parameters: fovy, aspect, near, far
     rad = math.radians(camera_ang)
