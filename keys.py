@@ -1,3 +1,4 @@
+#Arquivo que tem as funções relacionadas aos eventos ao pressionar o teclado
 import math
 import glm
 import time
