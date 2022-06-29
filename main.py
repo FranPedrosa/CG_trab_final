@@ -5,6 +5,7 @@ Francisco de Freitas Pedrosa    11215699
 Savio Duarte Fontes             10737251
 Thales Willian Dalvi da Silva   11219196
 '''
+#Importação dos pacotes
 import glfw
 from OpenGL.GL import *
 import OpenGL.GL.shaders
@@ -13,11 +14,13 @@ import glm
 import math
 import time
 
+#importação dos outros arquivos que tem as demais funções
 import codes
 import load
 import matrix
 import keys
 
+#definição dos parâmetros dos objetos
 inds = []
 objs = ['parede.obj'  ,'chao.obj','mesa.obj','xicara.obj' ,'porta.obj'     ,'grama.obj','estrada.obj','carta.obj','cogumelo.obj','lagarta.obj','ceu.obj' ]
 texs = ['parede_3.jpg','chao.png','mesa.png','xicara.jpg' ,'porta.jpg'     ,'grama.jpg','estrada.jpg','carta.jpg','cogumelo.jpg','lagarta.jpg','ceu.jpg' ]
@@ -26,7 +29,7 @@ scas = [(30,30,30    ),(30,30,30),(4,4,4   ),(0.5,0.5,0.5),(0.01,0.01,0.01),(2,2
 rots = [(0,1,0       ),(0,1,0   ),(0,1,0   ),(0,1,0      ),(-1,0,0        ),(-1,0,0   ),(0,1,0      ),(0,1,0    ),(-1,0,0)      ,(-1,0,0     ),(0,1,0   )]
 angs = [ 0            , 0        , 0        , 0           ,90              , 90        ,0           , 0         , 90           , 90          , 1         ]
 
-
+#Váriaveis Globais que guardam todas as informações dos objetos
 vertices_list = []    
 normals_list = []    
 textures_coord_list = []
@@ -35,6 +38,7 @@ begin = 0
 buffs = None
 program = None
 
+#Função que vai inicializar a janela e já cria os Buffers do progrma
 def init_window(width,height,name):
     global buffs, program
     glfw.init()
@@ -69,6 +73,7 @@ def init_window(width,height,name):
 
     return window
 
+#Função que vai pegar os modelos dos arquivos .obj e adicionar seus parâmetros aos seus devidos arrays
 def add_model(modelo):
     start = len(vertices_list)
     for face in modelo['faces']:
@@ -81,7 +86,7 @@ def add_model(modelo):
     end = len(vertices_list)
     return start,end
 
-
+#Função que manda os arrays para a gpu
 def send_gpu(l, coords, num_buff, var_name):
     array = np.zeros(len(l), [("position", np.float32, coords)])
     array['position'] = l
@@ -94,12 +99,14 @@ def send_gpu(l, coords, num_buff, var_name):
     glEnableVertexAttribArray(loc)
     glVertexAttribPointer(loc, coords, GL_FLOAT, False, stride, offset)
 
+#Função que manda todos os arrays de parâmetros para gpu
 def all_gpu():
     send_gpu(vertices_list,3,0,'position')
     send_gpu(textures_coord_list,2,1,'texture_coord')
     send_gpu(normals_list,3,2,'normals')
     glEnable(GL_DEPTH_TEST)
 
+#Função que renderiza o objeto de acordo com sua matriz modelo
 def desenha_obj(mat_model,tex,indexes):
     begin, end = indexes
     loc_model = glGetUniformLocation(program, "model")
@@ -107,7 +114,7 @@ def desenha_obj(mat_model,tex,indexes):
     glBindTexture(GL_TEXTURE_2D, tex)
     glDrawArrays(GL_TRIANGLES, begin,end-begin)
 
-
+#Função que faz a animação do cenário, tanto a função do cogumelo crescendo e diminuindo e a função do zoom "especial"
 def animation():
     t = time.time() - begin
     ft = 1+0.3*math.cos(t) 
@@ -124,6 +131,7 @@ def animation():
             matrix.camera_ang = 45
             matrix.camera_pos = keys.zoom_pos
 
+#função que faz o loop enquanto a janela está aberta
 def main_loop():
 
     glfw.poll_events() 
@@ -135,7 +143,7 @@ def main_loop():
 
     animation()
 
-
+    #renderiza os objetos nas posições deles
     for i in range(len(objs)):
         px,py,pz = poss[i]
         rx,ry,rz = rots[i]
@@ -144,10 +152,12 @@ def main_loop():
         mat_model = matrix.model(ang,rx,ry,rz,px,py,pz,sx,sy,sz)
         desenha_obj(mat_model,i,inds[i])
 
+    #renderiza a matriz view
     mat_view = matrix.view()
     loc_view = glGetUniformLocation(program, "view")
     glUniformMatrix4fv(loc_view, 1, GL_TRUE, mat_view)
 
+    #renderiza a matriz projection 
     mat_projection = matrix.projection()
     loc_projection = glGetUniformLocation(program, "projection")
     glUniformMatrix4fv(loc_projection, 1, GL_TRUE, mat_projection)    
@@ -162,25 +172,30 @@ def main_loop():
     glfw.swap_buffers(window)
 
 
+#Função principal que chama todos os outros comandos do progrma
 if __name__ == '__main__':
 
     begin = time.time()
     window = init_window(900,900,'Alice')
 
+    #carregamento dos objetos
     for obj in objs:
         m = load.load_model(obj)
         inds.append( add_model(m))
 
+    #carregamento das texturas
     i = 0
     for t in texs:
         load.load_texture(i,t)
         i+=1
 
+    #criação dos buffers
     all_gpu()
 
     glfw.show_window(window)
     glfw.set_key_callback(window,keys.key_event)
 
+    #loop da janela aberta
     while not glfw.window_should_close(window):
         main_loop()
 
