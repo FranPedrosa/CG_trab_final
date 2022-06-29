@@ -1,3 +1,5 @@
+#Definition of the Shaders: Vertex Code and Fragment Code
+
 vertex = """
     attribute vec3 position;
     attribute vec2 texture_coord;
