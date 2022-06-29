@@ -1,6 +1,7 @@
 from OpenGL.GL import *
 from PIL import Image
 
+#Função que vai carregar as matrizes de pontos dos objetos
 def load_model(filename):
     """Loads a Wavefront OBJ file. """
     objects = {}
@@ -55,6 +56,7 @@ def load_model(filename):
 
     return model
 
+#Função que carrega as texturas para os objetos
 def load_texture(texture_id, img_textura):
     glBindTexture(GL_TEXTURE_2D, texture_id)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
