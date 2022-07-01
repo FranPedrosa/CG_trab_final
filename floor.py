@@ -1,3 +1,5 @@
+#arquivo python que vai gerar um arquivo .obj que contém os conteúdos do objeto floor para ser usado no trabalho
+
 import random
 import numpy as np
 
